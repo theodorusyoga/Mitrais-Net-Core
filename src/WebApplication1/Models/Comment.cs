@@ -11,6 +11,7 @@ namespace WebApplication1.Models
         public string Name { get; set; }
         public string Text { get; set; }
         public int PictureID { get; set; }
+        public DateTime Time { get; set; }
         public Picture Picture { get; set; }
     }
 }

@@ -128,14 +128,28 @@ namespace WebApplication1.Controllers
         {
             var item = _context.Pictures.Where(p => p.ID == picture.ID).Single();
 
+            var comments = _context.Comments.Where(p => p.PictureID == item.ID);
+            var comments_result = new List<object>();
+            foreach (var comment in comments)
+            {
+                comments_result.Add(new
+                {
+                    id = comment.ID,
+                    name = comment.Name,
+                    text = comment.Text,
+                    pictureid = comment.PictureID,
+                    time = comment.Time
+                });
+            }
+
             return new
             {
                 id = item.ID,
                 src = item.Source,
                 desc = item.Description,
                 likes = item.Likes,
-                comments_amt = _context.Comments.Where(p => p.PictureID == item.ID).Count()
-
+                comments_amt = _context.Comments.Where(p => p.PictureID == item.ID).Count(),
+                comments = comments_result
             };
 
         }
@@ -148,6 +162,41 @@ namespace WebApplication1.Controllers
             _context.SaveChanges();
             return new
             {
+                status = 0
+            };
+        }
+
+        [HttpPost("/api/comments")]
+        public object GetComments(Picture picture)
+        {
+            var select = _context.Comments.Where(p => p.PictureID == picture.ID);
+            var result = new List<object>();
+            foreach (var item in select)
+            {
+                result.Add(new
+                {
+                    id = item.ID,
+                    name = item.Name,
+                    text = item.Text,
+                    pictureid = item.PictureID,
+                    time = item.Time
+                });
+            }
+            return result;
+        }
+
+        [HttpPost("/api/comments/create")]
+        public object CreateComment(Comment comment)
+        {
+            comment.Time = DateTime.Now;
+            _context.Comments.Add(comment);
+            _context.SaveChanges();
+            return new
+            {
+                id= comment.ID,
+                text = comment.Text,
+                name = comment.Name,
+                time = comment.Time,
                 status = 0
             };
         }
