@@ -185,6 +185,18 @@ namespace WebApplication1.Controllers
             return result;
         }
 
+        [HttpPost("/api/comments/delete")]
+        public object DeleteComment(Comment comment)
+        {
+            var select = _context.Comments.Where(p => p.ID == comment.ID).Single();
+            _context.Comments.Remove(select);
+            _context.SaveChanges();
+            return new
+            {
+                status = 0
+            };
+        }
+
         [HttpPost("/api/comments/create")]
         public object CreateComment(Comment comment)
         {
