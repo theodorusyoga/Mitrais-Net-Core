@@ -9,13 +9,18 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using WebApplication1.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.Extensions.Options;
 
 namespace WebApplication1
 {
     public class Startup
     {
+        
         public Startup(IHostingEnvironment env)
         {
+            
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
@@ -54,6 +59,57 @@ namespace WebApplication1
             app.UseApplicationInsightsRequestTelemetry();
 
             app.UseApplicationInsightsExceptionTelemetry();
+            
+          
+
+            //JWT
+            var secret = "pass@word12345678901234567890";
+            var bytes = Encoding.ASCII.GetBytes(secret);
+        
+            var signing = new SymmetricSecurityKey(bytes);
+           
+            var token = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = signing,
+
+                ValidateIssuer = true,
+                ValidIssuer = "Issuer",
+
+                ValidateAudience = true,
+                ValidAudience = "Audience",
+
+                ValidateLifetime = true,
+
+                ClockSkew = TimeSpan.Zero
+            };
+
+            var options = new TokenProviderOptions
+            {
+                Audience = "Audience",
+                Issuer = "Issuer",
+                SigningCredentials = new SigningCredentials(signing, SecurityAlgorithms.HmacSha256)
+            };
+
+            app.UseMiddleware<TokenProviderMiddleware>(Options.Create(options));
+
+            app.UseJwtBearerAuthentication(new JwtBearerOptions()
+            {
+                AutomaticAuthenticate = true,
+                AutomaticChallenge = true,
+                TokenValidationParameters = token
+            });
+
+            app.UseCookieAuthentication(new CookieAuthenticationOptions()
+            {
+                AutomaticAuthenticate = true,
+                AutomaticChallenge = true,
+                AuthenticationScheme = "Cookie",
+                CookieName = "access_token",
+                TicketDataFormat = new CustomJwt(
+                    SecurityAlgorithms.HmacSha256,
+                    token)
+            });
 
             app.UseMvc();
         }

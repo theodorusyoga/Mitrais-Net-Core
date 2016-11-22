@@ -197,6 +197,18 @@ namespace WebApplication1.Controllers
             };
         }
 
+        [HttpPost("/api/comments/update")]
+        public object UpdateComment(Comment comment)
+        {
+            var select = _context.Comments.Where(p => p.ID == comment.ID).Single();
+            select.Text = comment.Text;
+            _context.SaveChanges();
+            return new
+            {
+                status = 0
+            };
+        }
+
         [HttpPost("/api/comments/create")]
         public object CreateComment(Comment comment)
         {
