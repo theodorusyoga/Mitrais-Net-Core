@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.Extensions.Options;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace WebApplication1
 {
@@ -44,8 +45,28 @@ namespace WebApplication1
             var connection = @"Server=MTPC433;Database=ReduxDb;Trusted_Connection=True;";
             services.AddDbContext<ReduxDbContext>(options => options.UseSqlServer(connection));
 
+            //services.AddCors(options =>
+            //{
+            //    options.AddPolicy("CORS", policy =>
+            //    {
+            //        policy.WithOrigins("http://localhost:8080").WithHeaders("Authorization").WithMethods("GET,PUT,POST,DELETE,OPTIONS");
+            //    });
+            //});
+
             // Add framework services.
             services.AddApplicationInsightsTelemetry(Configuration);
+
+
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("User", policy =>
+                {
+                    policy.RequireClaim("TEST", "TEST123");
+                });
+            });
+
+
 
             services.AddMvc();
         }
@@ -53,16 +74,19 @@ namespace WebApplication1
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
+            app.UseCors("CORS");
+
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
             app.UseApplicationInsightsRequestTelemetry();
 
             app.UseApplicationInsightsExceptionTelemetry();
-            
-          
+
+
 
             //JWT
+         
             var secret = "pass@word12345678901234567890";
             var bytes = Encoding.ASCII.GetBytes(secret);
         
@@ -79,6 +103,7 @@ namespace WebApplication1
                 ValidateAudience = true,
                 ValidAudience = "Audience",
 
+                RequireExpirationTime = true,
                 ValidateLifetime = true,
 
                 ClockSkew = TimeSpan.Zero
@@ -102,6 +127,7 @@ namespace WebApplication1
 
             app.UseCookieAuthentication(new CookieAuthenticationOptions()
             {
+                CookieHttpOnly= true,
                 AutomaticAuthenticate = true,
                 AutomaticChallenge = true,
                 AuthenticationScheme = "Cookie",
@@ -110,6 +136,8 @@ namespace WebApplication1
                     SecurityAlgorithms.HmacSha256,
                     token)
             });
+
+            
 
             app.UseMvc();
         }

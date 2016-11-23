@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Primitives;
 using System;
@@ -10,6 +12,7 @@ using WebApplication1.Models;
 namespace WebApplication1.Controllers
 {
     [AllowCrossSite]
+    [EnableCors("CORS")]
     public class EmployeeController : Controller
     {
         private ReduxDbContext _context;
@@ -105,6 +108,7 @@ namespace WebApplication1.Controllers
         }
 
         [HttpGet("/api/pictures")]
+        [Authorize(Policy = "User")]
         public object GetPictures()
         {
             var result = _context.Pictures.ToList();
@@ -232,8 +236,9 @@ namespace WebApplication1.Controllers
     {
         public override void OnActionExecuting(ActionExecutingContext context)
         {
-            context.HttpContext.Response.Headers.Add(new KeyValuePair<string, StringValues>("Access-Control-Allow-Origin", "*"));
-            context.HttpContext.Response.Headers.Add(new KeyValuePair<string, StringValues>("Access-Control-Allow-Headers", "Content-Type"));
+            //context.HttpContext.Response.Headers.Add(new KeyValuePair<string, StringValues>("Access-Control-Allow-Headers", "Authorization,X-Requested-With,Accept,X-Alt-Referer"));
+            //context.HttpContext.Response.Headers.Add(new KeyValuePair<string, StringValues>("Access-Control-Allow-Methods", "GET,POST"));
+            //context.HttpContext.Response.Headers.Add(new KeyValuePair<string, StringValues>("Access-Control-Allow-Credentials", "true"));
             base.OnActionExecuting(context);
         }
     }

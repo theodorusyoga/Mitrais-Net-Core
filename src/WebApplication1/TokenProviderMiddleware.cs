@@ -33,6 +33,7 @@ namespace WebApplication1
                 !context.Request.HasFormContentType)
             {
                 context.Response.StatusCode = 400;
+              //  context.Response.Headers.Add(new KeyValuePair<string, StringValues>("Access-Control-Allow-Origin", "*"));
                 return context.Response.WriteAsync("Bad request");
             }
 
@@ -45,9 +46,10 @@ namespace WebApplication1
             var password = context.Request.Form["password"];
 
             var identity = await GetIdentity(username, password);
-            if(identity == null)
+            if (identity == null)
             {
                 context.Response.StatusCode = 400;
+              //  context.Response.Headers.Add(new KeyValuePair<string, StringValues>("Access-Control-Allow-Origin", "*"));
                 await context.Response.WriteAsync("Invalid username or password");
                 return;
             }
@@ -58,7 +60,8 @@ namespace WebApplication1
             {
                 new Claim(JwtRegisteredClaimNames.Sub, username),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.Iat, now.ToUnixTimeString(), ClaimValueTypes.Integer64)
+                new Claim(JwtRegisteredClaimNames.Iat, now.ToUnixTimeString(), ClaimValueTypes.Integer64),
+                identity.FindFirst("TEST")
             };
             var jwt = new JwtSecurityToken(
                 issuer: _options.Issuer,
@@ -76,16 +79,19 @@ namespace WebApplication1
             };
 
             context.Response.ContentType = "application/json";
+          //  context.Response.Headers.Add(new KeyValuePair<string, StringValues>("Access-Control-Allow-Origin", "*"));
             await context.Response.WriteAsync(JsonConvert.SerializeObject(response, new JsonSerializerSettings() { Formatting = Formatting.Indented }));
         }
 
-        
+
 
         private Task<ClaimsIdentity> GetIdentity(string username, string password)
         {
             if (username == "TEST" && password == "TEST123")
                 return Task.FromResult(new ClaimsIdentity(new GenericIdentity(username, "Token")
-                    , new Claim[] { }));
+                    , new Claim[] {
+                           new Claim(username, password)
+                    }));
 
             return Task.FromResult<ClaimsIdentity>(null);
         }
