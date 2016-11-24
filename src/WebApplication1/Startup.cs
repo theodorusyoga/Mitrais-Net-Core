@@ -45,13 +45,6 @@ namespace WebApplication1
             var connection = @"Server=MTPC433;Database=ReduxDb;Trusted_Connection=True;";
             services.AddDbContext<ReduxDbContext>(options => options.UseSqlServer(connection));
 
-            //services.AddCors(options =>
-            //{
-            //    options.AddPolicy("CORS", policy =>
-            //    {
-            //        policy.WithOrigins("http://localhost:8080").WithHeaders("Authorization").WithMethods("GET,PUT,POST,DELETE,OPTIONS");
-            //    });
-            //});
 
             // Add framework services.
             services.AddApplicationInsightsTelemetry(Configuration);
@@ -74,7 +67,10 @@ namespace WebApplication1
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            app.UseCors("CORS");
+            app.UseCors(builder =>
+            {
+                builder.WithOrigins("http://localhost:8080").AllowAnyHeader().AllowAnyMethod();
+            });
 
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();

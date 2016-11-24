@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Primitives;
@@ -8,11 +7,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WebApplication1.Models;
+using Microsoft.AspNetCore.Cors;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace WebApplication1.Controllers
 {
-    [AllowCrossSite]
-    [EnableCors("CORS")]
     public class EmployeeController : Controller
     {
         private ReduxDbContext _context;
@@ -107,10 +106,14 @@ namespace WebApplication1.Controllers
             };
         }
 
+        [AllowCrossSite]
         [HttpGet("/api/pictures")]
         [Authorize(Policy = "User")]
+
         public object GetPictures()
         {
+            DecryptJWT();
+
             var result = _context.Pictures.ToList();
             var obj = new List<object>();
             foreach (var item in result)
@@ -221,25 +224,37 @@ namespace WebApplication1.Controllers
             _context.SaveChanges();
             return new
             {
-                id= comment.ID,
+                id = comment.ID,
                 text = comment.Text,
                 name = comment.Name,
                 time = comment.Time,
                 status = 0
             };
         }
-    }
 
-
-
-    public class AllowCrossSiteAttribute : ActionFilterAttribute
-    {
-        public override void OnActionExecuting(ActionExecutingContext context)
+        private int DecryptJWT()
         {
-            //context.HttpContext.Response.Headers.Add(new KeyValuePair<string, StringValues>("Access-Control-Allow-Headers", "Authorization,X-Requested-With,Accept,X-Alt-Referer"));
-            //context.HttpContext.Response.Headers.Add(new KeyValuePair<string, StringValues>("Access-Control-Allow-Methods", "GET,POST"));
-            //context.HttpContext.Response.Headers.Add(new KeyValuePair<string, StringValues>("Access-Control-Allow-Credentials", "true"));
-            base.OnActionExecuting(context);
+            StringValues auth = string.Empty;
+            if (this.HttpContext.Request.Headers.TryGetValue("Authorization", out auth))
+            {
+                string token = auth.ToString().Replace("Bearer", "").Trim();
+                var jwt = new JwtSecurityTokenHandler().ReadJwtToken(token);
+
+            }
+            return 0;
+        }
+
+
+
+        public class AllowCrossSiteAttribute : ActionFilterAttribute
+        {
+            public override void OnActionExecuting(ActionExecutingContext context)
+            {
+                context.HttpContext.Response.Headers.Add(new KeyValuePair<string, StringValues>("Access-Control-Allow-Headers", "Authorization"));
+                context.HttpContext.Response.Headers.Add(new KeyValuePair<string, StringValues>("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS"));
+                // context.HttpContext.Response.Headers.Add(new KeyValuePair<string, StringValues>("Access-Control-Allow-Origin", "http://localhost:8080"));
+                base.OnActionExecuting(context);
+            }
         }
     }
 }

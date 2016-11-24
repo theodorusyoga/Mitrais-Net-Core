@@ -28,12 +28,15 @@ namespace WebApplication1.Models
             {
                 entity.Property(e => e.ID).IsRequired();
             });
-
-
+            modelBuilder.Entity<User>(entity =>
+            {
+                entity.Property(e => e.ID).IsRequired();
+            });
         }
         public virtual DbSet<Employee> Employees { get; set; }
         public virtual DbSet<Todo> Todos { get; set; }
         public virtual DbSet<Picture> Pictures { get; set; }
         public virtual DbSet<Comment> Comments { get; set; }
+        public virtual DbSet<User> Users { get; set; }
     }
 }

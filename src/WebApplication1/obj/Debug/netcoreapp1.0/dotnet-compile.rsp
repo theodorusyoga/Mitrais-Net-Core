@@ -198,10 +198,10 @@
 --reference:C:\Users\Theodorus_M1438\.nuget\packages\System.Xml.XDocument\4.0.11\ref\netstandard1.3\System.Xml.XDocument.dll
 --resource:"C:\Users\Theodorus_M1438\documents\visual studio 2015\Projects\WebApplication1\src\WebApplication1\obj\Debug\netcoreapp1.0\WebApplication1dotnet-compile.deps.json",WebApplication1.deps.json
 C:\Users\Theodorus_M1438\documents\visual studio 2015\Projects\WebApplication1\src\WebApplication1\CustomJws.cs
+C:\Users\Theodorus_M1438\documents\visual studio 2015\Projects\WebApplication1\src\WebApplication1\ExtensionMethods.cs
 C:\Users\Theodorus_M1438\documents\visual studio 2015\Projects\WebApplication1\src\WebApplication1\Program.cs
 C:\Users\Theodorus_M1438\documents\visual studio 2015\Projects\WebApplication1\src\WebApplication1\Startup.cs
 C:\Users\Theodorus_M1438\documents\visual studio 2015\Projects\WebApplication1\src\WebApplication1\TokenProviderMiddleware.cs
-C:\Users\Theodorus_M1438\documents\visual studio 2015\Projects\WebApplication1\src\WebApplication1\UnixTimeExtension.cs
 C:\Users\Theodorus_M1438\documents\visual studio 2015\Projects\WebApplication1\src\WebApplication1\Controllers\EmployeeController.cs
 C:\Users\Theodorus_M1438\documents\visual studio 2015\Projects\WebApplication1\src\WebApplication1\Controllers\ValuesController.cs
 C:\Users\Theodorus_M1438\documents\visual studio 2015\Projects\WebApplication1\src\WebApplication1\Models\Comment.cs
@@ -210,3 +210,4 @@ C:\Users\Theodorus_M1438\documents\visual studio 2015\Projects\WebApplication1\s
 C:\Users\Theodorus_M1438\documents\visual studio 2015\Projects\WebApplication1\src\WebApplication1\Models\ReduxDbContext.cs
 C:\Users\Theodorus_M1438\documents\visual studio 2015\Projects\WebApplication1\src\WebApplication1\Models\Todo.cs
 C:\Users\Theodorus_M1438\documents\visual studio 2015\Projects\WebApplication1\src\WebApplication1\Models\TokenProviderOptions.cs
+C:\Users\Theodorus_M1438\documents\visual studio 2015\Projects\WebApplication1\src\WebApplication1\Models\User.cs
