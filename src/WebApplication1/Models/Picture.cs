@@ -11,5 +11,7 @@ namespace WebApplication1.Models
         public string Description { get; set; }
         public string Source { get; set; }
         public int Likes { get; set; }
+        public int OwnerID { get; set; }
+        public User Owner { get; set; }
     }
 }

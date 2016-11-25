@@ -112,9 +112,9 @@ namespace WebApplication1.Controllers
 
         public object GetPictures()
         {
-            DecryptJWT();
+            int id = GetUserIdFromJWT();
 
-            var result = _context.Pictures.ToList();
+            var result = _context.Pictures.Where(p => p.OwnerID == id).ToList();
             var obj = new List<object>();
             foreach (var item in result)
             {
@@ -124,7 +124,8 @@ namespace WebApplication1.Controllers
                     src = item.Source,
                     desc = item.Description,
                     likes = item.Likes,
-                    comments_amt = _context.Comments.Where(p => p.PictureID == item.ID).Count()
+                    comments_amt = _context.Comments.Where(p => p.PictureID == item.ID).Count(),
+                    liked = _context.UserLikes.Where(p => p.PictureID == item.ID && p.UserID == id).Count() > 0
                 });
             }
             return obj;
@@ -161,12 +162,37 @@ namespace WebApplication1.Controllers
 
         }
 
+      
+        [AllowCrossSite]
         [HttpPost("/api/pictures/like")]
-        public object LikePictures(Picture picture)
+        [Authorize(Policy = "User")]
+        public object LikePictures(UserLike like)
         {
-            var select = _context.Pictures.Where(p => p.ID == picture.ID).Single();
+            int id = GetUserIdFromJWT();
+            var select = _context.Pictures.Where(p => p.ID == like.PictureID).Single();
             select.Likes += 1;
+            like.UserID = id;
+            _context.UserLikes.Add(like);
             _context.SaveChanges();
+            return new
+            {
+                status = 0
+            };
+        }
+
+        [AllowCrossSite]
+        [HttpPost("/api/pictures/unlike")]
+        [Authorize(Policy = "User")]
+        public object UnlikePictures(UserLike like)
+        {
+            int id = GetUserIdFromJWT();
+            var select = _context.Pictures.Where(p => p.ID == like.PictureID).Single();
+            select.Likes -= 1;
+
+            var userlike = _context.UserLikes.Where(p => p.UserID == id && p.PictureID == like.PictureID).Single();
+            _context.UserLikes.Remove(userlike);
+            _context.SaveChanges();
+
             return new
             {
                 status = 0
@@ -232,14 +258,15 @@ namespace WebApplication1.Controllers
             };
         }
 
-        private int DecryptJWT()
+        private int GetUserIdFromJWT()
         {
             StringValues auth = string.Empty;
             if (this.HttpContext.Request.Headers.TryGetValue("Authorization", out auth))
             {
                 string token = auth.ToString().Replace("Bearer", "").Trim();
                 var jwt = new JwtSecurityTokenHandler().ReadJwtToken(token);
-
+                int id = Convert.ToInt32(jwt.Claims.Where(p => p.Type == "nameid").Single().Value);
+                return id;
             }
             return 0;
         }

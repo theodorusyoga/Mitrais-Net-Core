@@ -23,6 +23,7 @@ namespace WebApplication1.Models
             modelBuilder.Entity<Picture>(entity =>
             {
                 entity.Property(e => e.ID).IsRequired();
+                
             });
             modelBuilder.Entity<Comment>(entity =>
             {
@@ -31,6 +32,12 @@ namespace WebApplication1.Models
             modelBuilder.Entity<User>(entity =>
             {
                 entity.Property(e => e.ID).IsRequired();
+              
+            });
+            modelBuilder.Entity<UserLike>(entity =>
+            {
+                entity.Property(e => e.LikeID).IsRequired();
+
             });
         }
         public virtual DbSet<Employee> Employees { get; set; }
@@ -38,5 +45,6 @@ namespace WebApplication1.Models
         public virtual DbSet<Picture> Pictures { get; set; }
         public virtual DbSet<Comment> Comments { get; set; }
         public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<UserLike> UserLikes { get; set; }
     }
 }

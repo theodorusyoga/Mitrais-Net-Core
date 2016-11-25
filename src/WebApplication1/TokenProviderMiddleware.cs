@@ -67,6 +67,7 @@ namespace WebApplication1
                 new Claim(JwtRegisteredClaimNames.Sub, username),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Iat, now.ToUnixTimeString(), ClaimValueTypes.Integer64),
+                new Claim(JwtRegisteredClaimNames.NameId, identity.FindFirst("ID").Value),
                 identity.FindFirst("TEST")
             };
             var jwt = new JwtSecurityToken(
@@ -98,7 +99,8 @@ namespace WebApplication1
             if (select.Count() == 1)
                 return Task.FromResult(new ClaimsIdentity(new GenericIdentity("TEST", "Token")
                     , new Claim[] {
-                           new Claim("TEST", "TEST123")
+                           new Claim("TEST", "TEST123"),
+                           new Claim("ID", select.Single().ID.ToString())
                     }));
 
             return Task.FromResult<ClaimsIdentity>(null);
