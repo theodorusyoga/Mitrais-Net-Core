@@ -131,9 +131,12 @@ namespace WebApplication1.Controllers
             return obj;
         }
 
+        [AllowCrossSite]
         [HttpPost("/api/picture")]
+        [Authorize(Policy = "User")]
         public object GetPicture(Picture picture)
         {
+            int id = GetUserIdFromJWT();
             var item = _context.Pictures.Where(p => p.ID == picture.ID).Single();
 
             var comments = _context.Comments.Where(p => p.PictureID == item.ID);
@@ -156,13 +159,14 @@ namespace WebApplication1.Controllers
                 src = item.Source,
                 desc = item.Description,
                 likes = item.Likes,
+                liked = _context.UserLikes.Where(p => p.PictureID == item.ID && p.UserID == id).Count() > 0,
                 comments_amt = _context.Comments.Where(p => p.PictureID == item.ID).Count(),
                 comments = comments_result
             };
 
         }
 
-      
+
         [AllowCrossSite]
         [HttpPost("/api/pictures/like")]
         [Authorize(Policy = "User")]
@@ -199,7 +203,9 @@ namespace WebApplication1.Controllers
             };
         }
 
+        [AllowCrossSite]
         [HttpPost("/api/comments")]
+        [Authorize(Policy = "User")]
         public object GetComments(Picture picture)
         {
             var select = _context.Comments.Where(p => p.PictureID == picture.ID);
@@ -218,7 +224,9 @@ namespace WebApplication1.Controllers
             return result;
         }
 
+        [AllowCrossSite]
         [HttpPost("/api/comments/delete")]
+        [Authorize(Policy = "User")]
         public object DeleteComment(Comment comment)
         {
             var select = _context.Comments.Where(p => p.ID == comment.ID).Single();
@@ -230,7 +238,9 @@ namespace WebApplication1.Controllers
             };
         }
 
+        [AllowCrossSite]
         [HttpPost("/api/comments/update")]
+        [Authorize(Policy = "User")]
         public object UpdateComment(Comment comment)
         {
             var select = _context.Comments.Where(p => p.ID == comment.ID).Single();
@@ -242,7 +252,9 @@ namespace WebApplication1.Controllers
             };
         }
 
+        [AllowCrossSite]
         [HttpPost("/api/comments/create")]
+        [Authorize(Policy ="User")]
         public object CreateComment(Comment comment)
         {
             comment.Time = DateTime.Now;

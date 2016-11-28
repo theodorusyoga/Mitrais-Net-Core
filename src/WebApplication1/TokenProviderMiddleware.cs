@@ -82,6 +82,7 @@ namespace WebApplication1
 
             var response = new
             {
+                fullname = identity.FindFirst("Fullname").Value,
                 access_token = encodedJwt,
                 expires_in = (int)_options.Expiration.TotalSeconds
             };
@@ -100,7 +101,8 @@ namespace WebApplication1
                 return Task.FromResult(new ClaimsIdentity(new GenericIdentity("TEST", "Token")
                     , new Claim[] {
                            new Claim("TEST", "TEST123"),
-                           new Claim("ID", select.Single().ID.ToString())
+                           new Claim("ID", select.Single().ID.ToString()),
+                           new Claim("Fullname", select.Single().Fullname.ToString())
                     }));
 
             return Task.FromResult<ClaimsIdentity>(null);
