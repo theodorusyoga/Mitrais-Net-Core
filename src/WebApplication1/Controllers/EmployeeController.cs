@@ -139,7 +139,7 @@ namespace WebApplication1.Controllers
             int id = GetUserIdFromJWT();
             var item = _context.Pictures.Where(p => p.ID == picture.ID).Single();
 
-            var comments = _context.Comments.Where(p => p.PictureID == item.ID);
+            var comments = _context.Comments.Where(p => p.PictureID == item.ID).OrderByDescending(p => p.Time);
             var comments_result = new List<object>();
             foreach (var comment in comments)
             {
