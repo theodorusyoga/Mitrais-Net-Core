@@ -69,7 +69,7 @@ namespace WebApplication1
         {
             app.UseCors(builder =>
             {
-                builder.WithOrigins("http://localhost:8080").AllowAnyHeader().AllowAnyMethod();
+                builder.WithOrigins("http://localhost:5000").AllowAnyHeader().AllowAnyMethod();
             });
 
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
