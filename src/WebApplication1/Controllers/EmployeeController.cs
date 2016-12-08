@@ -254,7 +254,7 @@ namespace WebApplication1.Controllers
 
         [AllowCrossSite]
         [HttpPost("/api/comments/create")]
-        [Authorize(Policy ="User")]
+        [Authorize(Policy = "User")]
         public object CreateComment(Comment comment)
         {
             comment.Time = DateTime.Now;
@@ -267,6 +267,67 @@ namespace WebApplication1.Controllers
                 name = comment.Name,
                 time = comment.Time,
                 status = 0
+            };
+        }
+
+        [AllowCrossSite]
+        [HttpGet("/blog/getposts")]
+        [Authorize(Policy = "User")]
+        public object GetPosts()
+        {
+            var posts = _context.Posts.OrderByDescending(p => p.ID);
+            var result = new List<object>();
+            foreach (var post in posts)
+            {
+                var obj = new
+                {
+                    id = post.ID,
+                    title = post.Title,
+                    content = post.Content,
+                    media = post.Media,
+                    tags = post.Tags,
+                    time = post.Time.ToString("dd MMMM yyyy HH:mm:ss")
+                };
+                result.Add(obj);
+            }
+            return result;
+        }
+
+        [AllowCrossSite]
+        [HttpPost("/blog/get")]
+        [Authorize(Policy = "User")]
+        public object GetSinglePost(Post data)
+        {
+            var post = _context.Posts.Where(p => p.ID == data.ID).Single();
+
+            return new
+            {
+                id = post.ID,
+                title = post.Title,
+                content = post.Content,
+                media = post.Media,
+                tags = post.Tags,
+                time = post.Time.ToString("dd MMMM yyyy HH:mm:ss")
+            };
+        }
+
+        [AllowCrossSite]
+        [HttpPost("/blog/create")]
+        [Authorize(Policy = "User")]
+        public object CreatePost(Post post)
+        {
+            post.Time = DateTime.Now;
+            _context.Posts.Add(post);
+            _context.SaveChanges();
+            return new
+            {
+                status = 0,
+                id = post.ID,
+                title = post.Title,
+                content = post.Content,
+                media = post.Media,
+                tags = post.Tags,
+                time = post.Time.ToString("dd MMMM yyyy HH:mm:ss")
             };
         }
 

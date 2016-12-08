@@ -12,7 +12,7 @@ namespace WebApplication1.Models
         public string RefreshPath { get; set; } = "/refresh";
         public string Issuer { get; set; }
         public string Audience { get; set; }
-        public TimeSpan Expiration { get; set; } = TimeSpan.FromHours(2);
+        public TimeSpan Expiration { get; set; } = TimeSpan.FromHours(12);
         public SigningCredentials SigningCredentials { get; set; }
     }
 }
