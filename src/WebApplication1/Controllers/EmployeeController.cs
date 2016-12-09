@@ -331,6 +331,45 @@ namespace WebApplication1.Controllers
             };
         }
 
+        [AllowCrossSite]
+        [HttpPost("/blog/update")]
+        [Authorize(Policy = "User")]
+        public object UpdatePost(Post post)
+        {
+            var select = _context.Posts.Where(p => p.ID == post.ID).Single();
+            select.Title = post.Title;
+            select.Content = post.Content;
+            select.Media = post.Media;
+            select.Tags = post.Tags;
+            select.Time = DateTime.Now;
+            _context.SaveChanges();
+            return new
+            {
+                status = "0",
+                 id = post.ID,
+                title = post.Title,
+                content = post.Content,
+                media = post.Media,
+                tags = post.Tags,
+                time = post.Time.ToString("dd MMMM yyyy HH:mm:ss")
+            };
+        }
+
+        [AllowCrossSite]
+        [HttpPost("/blog/delete")]
+        [Authorize(Policy = "User")]
+        public object DeletePost(Post post)
+        {
+            var select = _context.Posts.Where(p => p.ID == post.ID).Single();
+            _context.Posts.Remove(select);
+            _context.SaveChanges();
+            return new
+            {
+                status = "0",
+                id = post.ID
+            };
+        }
+
         private int GetUserIdFromJWT()
         {
             StringValues auth = string.Empty;
